@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="type_array">
+        <item>Q1 - Important urgent </item>
+        <item>Q2 - Important Not urgent</item>
+        <item>Q3 - UnImportant Urgent</item>
+        <item>Q4 - UnImportant Not Urgent</item>
+    </string-array>
+
+
+</resources>

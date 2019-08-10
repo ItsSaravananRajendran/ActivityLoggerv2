@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal">
+
+    <com.example.activityloggerv2.SyncScrollView.ObservableScrollView
+        android:id="@+id/header_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TableLayout
+            android:id="@+id/table_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </com.example.activityloggerv2.SyncScrollView.ObservableScrollView>
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal"
+            android:id="@+id/fillable_area">
+            <TableLayout
+                android:id="@+id/fixed_column"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <com.example.activityloggerv2.SyncScrollView.ObservableScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/content_view">
+                <TableLayout
+                    android:id="@+id/scrollable_part"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"/>
+            </com.example.activityloggerv2.SyncScrollView.ObservableScrollView>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+
+</LinearLayout>
