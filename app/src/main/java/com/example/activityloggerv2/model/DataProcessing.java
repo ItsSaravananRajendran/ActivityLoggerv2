@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.activityloggerv2.model.LogData;
-
 import androidx.annotation.RequiresApi;
 
 public class DataProcessing {
@@ -34,8 +32,8 @@ public class DataProcessing {
             } else {
                 BufferedReader br = new BufferedReader(new FileReader(log_activity_file));
                 String line = br.readLine();
-                val = line.split(",");
-                if (line != null && val.length == 5) {
+                if (line != null) {
+                    val = line.split(",");
                     LogData log = new LogData();
                     log.populate(val);
                     data_array.add(log);

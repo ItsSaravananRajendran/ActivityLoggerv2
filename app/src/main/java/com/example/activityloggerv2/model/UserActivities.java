@@ -63,8 +63,6 @@ public class UserActivities extends ViewModel {
     }
 
     public void load_current() {
-        File current_activity = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), "current_activity");
         try {
             if (!current_activity.exists()) {
                 current_activity.createNewFile();
