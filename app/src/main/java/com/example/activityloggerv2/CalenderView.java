@@ -31,6 +31,7 @@ import com.example.activityloggerv2.SyncScrollView.ObservableScrollView;
 import com.example.activityloggerv2.SyncScrollView.ScrollViewListener;
 import com.example.activityloggerv2.model.ManageCalender;
 import com.example.activityloggerv2.model.UserActivities;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -38,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 
+@androidx.annotation.RequiresApi(api = Build.VERSION_CODES.O)
 public class CalenderView extends Fragment implements ScrollViewListener {
 
     private ObservableScrollView scrollView1 = null;
@@ -49,7 +51,6 @@ public class CalenderView extends Fragment implements ScrollViewListener {
     String date = "";
     ManageCalender weekly_cal;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class CalenderView extends Fragment implements ScrollViewListener {
         return v;
     }
 
-    public void refresh_frag(){
+    public void refresh_frag() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (Build.VERSION.SDK_INT >= 26) {
             ft.setReorderingAllowed(false);
@@ -74,8 +75,7 @@ public class CalenderView extends Fragment implements ScrollViewListener {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public  void createTable(View v){
+    public void createTable(View v) {
         TableRow.LayoutParams wrapWrapTableRowParams = new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         int fixedColumnWidths = 20;
         int scrollableColumnWidths = 20;
@@ -85,13 +85,13 @@ public class CalenderView extends Fragment implements ScrollViewListener {
         weekly_cal = new ManageCalender(date);
         String[] header_data = weekly_cal.get_header();
 
-        TableLayout header =  v.findViewById(R.id.table_header);
+        TableLayout header = v.findViewById(R.id.table_header);
         TableRow row = new TableRow(getContext());
         row.setLayoutParams(wrapWrapTableRowParams);
         row.setGravity(Gravity.CENTER);
         row.setBackgroundColor(Color.parseColor("#0C9B37"));
 
-        TextView day = makeTableRowWithText("Day",10,fixedHeaderHeight);
+        TextView day = makeTableRowWithText("Day", 10, fixedHeaderHeight);
         day.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,42 +99,62 @@ public class CalenderView extends Fragment implements ScrollViewListener {
             }
         });
         row.addView(day);
-        for(int I=0;I<7;I++){
+        for (int I = 0; I < 7; I++) {
             row.addView(makeTableRowWithText(header_data[I], fixedColumnWidths, fixedHeaderHeight));
         }
         header.addView(row);
-        TableLayout fixedColumn =  v.findViewById(R.id.fixed_column);
-        TableLayout scrollablePart =  v.findViewById(R.id.scrollable_part);
-        LocalTime time= LocalTime.parse("00:00", DateTimeFormatter.ofPattern("H:mm"));
+        final TableLayout fixedColumn = v.findViewById(R.id.fixed_column);
+        TableLayout scrollablePart = v.findViewById(R.id.scrollable_part);
+        LocalTime time = LocalTime.parse("00:00", DateTimeFormatter.ofPattern("H:mm"));
 
         String color;
-        for(int i = 0; i < weekly_cal.getNO_ROWS(); i++) {
-            TextView fixedView = makeTableRowWithText(time.toString(), 10,fixedRowHeight);
-            if(i%2 == 0){
+        int render_color = 0;
+        for (int i = 0; i < weekly_cal.getNO_ROWS(); i++) {
+            if (weekly_cal.isHidden[i]) {
+                time = time.plus(30, ChronoUnit.MINUTES);
+                continue;
+            }
+            final TextView fixedView = makeTableRowWithText(time.toString(), 10, fixedRowHeight);
+            if (render_color % 2 == 0) {
                 fixedView.setBackgroundColor(Color.parseColor("#eeeeee"));
                 color = "#ffffff";
-            } else{
+            } else {
                 fixedView.setBackgroundColor(Color.parseColor("#10D44B"));
                 color = "#24DF5C";
             }
+            final int hidden_row = i;
+            final int color_row = render_color;
+            fixedView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    weekly_cal.isHidden[hidden_row] = !weekly_cal.isHidden[hidden_row];
+                    if (weekly_cal.isHidden[hidden_row])
+                        fixedView.setBackgroundColor(Color.parseColor(("#8B0000")));
+                    else if (color_row % 2 == 0) {
+                        fixedView.setBackgroundColor(Color.parseColor("#eeeeee"));
+                    } else {
+                        fixedView.setBackgroundColor(Color.parseColor("#10D44B"));
+                    }
+                }
+            });
             fixedColumn.addView(fixedView);
             row = new TableRow(getContext());
             row.setLayoutParams(wrapWrapTableRowParams);
             row.setGravity(Gravity.CENTER);
-            for(int j=0; j<7 ; j++){
-                final TextView cell = makeTableRowWithText(weekly_cal.get_calendar_data(i,j), scrollableColumnWidths, fixedRowHeight);
+            for (int j = 0; j < 7; j++) {
+                final TextView cell = makeTableRowWithText(weekly_cal.get_calendar_data(i, j), scrollableColumnWidths, fixedRowHeight);
                 final int finalJ = j;
                 final int finalI = i;
                 cell.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(weekly_cal.get_calendar_data(finalI,finalJ).contentEquals("-")){
-                            weekly_cal.set_calender_data(finalI,finalJ,"+");
+                        if (weekly_cal.get_calendar_data(finalI, finalJ).contentEquals("-")) {
+                            weekly_cal.set_calender_data(finalI, finalJ, "+");
                             cell.setBackgroundColor(Color.parseColor("#006400"));
-                        }else{
-                            weekly_cal.set_calender_data(finalI,finalJ,"-");
+                        } else {
+                            weekly_cal.set_calender_data(finalI, finalJ, "-");
                             String color = "#24DF5C";
-                            if (finalI%2==0) color = "#ffffff";
+                            if (finalI % 2 == 0) color = "#ffffff";
                             cell.setBackgroundColor(Color.parseColor(color));
                         }
 
@@ -145,6 +165,7 @@ public class CalenderView extends Fragment implements ScrollViewListener {
             row.setBackgroundColor(Color.parseColor(color));
             scrollablePart.addView(row);
             time = time.plus(30, ChronoUnit.MINUTES);
+            render_color++;
         }
     }
 
@@ -174,22 +195,32 @@ public class CalenderView extends Fragment implements ScrollViewListener {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.hide:
+                weekly_cal.save_hidden();
+                refresh_frag();
+                return true;
             case R.id.add:
                 create_popup();
+                refresh_frag();
+                return true;
+            case R.id.clear:
+                for (int I = 0; I < weekly_cal.getNO_ROWS(); I++) {
+                    weekly_cal.isHidden[I] = false;
+                }
+                weekly_cal.save_hidden();
+                refresh_frag();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void create_popup(){
-        LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+    public void create_popup() {
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
         final View popupView = inflater.inflate(R.layout.pop_up, null);
 
         // create the popup window
@@ -212,7 +243,7 @@ public class CalenderView extends Fragment implements ScrollViewListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 activity_to_add = (String) parent.getItemAtPosition(pos);
-                Log.d("Activity add",activity_to_add);
+                Log.d("Activity add", activity_to_add);
             }
 
             @Override
@@ -226,11 +257,11 @@ public class CalenderView extends Fragment implements ScrollViewListener {
 
             @RequiresApi(api = Build.VERSION_CODES.O)
             public void onClick(View view) {
-                Log.d("Button Click",activity_to_add);
-                for(int I=0;I<weekly_cal.getNO_ROWS();I++){
-                    for(int J=0;J<7;J++){
-                        if(weekly_cal.get_calendar_data(I,J).contentEquals("+")){
-                            weekly_cal.set_calender_data(I,J,activity_to_add);
+                Log.d("Button Click", activity_to_add);
+                for (int I = 0; I < weekly_cal.getNO_ROWS(); I++) {
+                    for (int J = 0; J < 7; J++) {
+                        if (weekly_cal.get_calendar_data(I, J).contentEquals("+")) {
+                            weekly_cal.set_calender_data(I, J, activity_to_add);
                         }
                     }
                 }
@@ -241,15 +272,15 @@ public class CalenderView extends Fragment implements ScrollViewListener {
         });
     }
 
-    public boolean check_leap(int year){
-        if (year % 400 ==0 ) return true;
+    public boolean check_leap(int year) {
+        if (year % 400 == 0) return true;
         if (year % 100 == 0) return false;
         if (year % 4 == 0) return true;
         return false;
     }
 
-    public void create_date_pop_up(){
-        LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+    public void create_date_pop_up() {
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
         final View popupView = inflater.inflate(R.layout.date_pop_up, null);
 
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -258,13 +289,13 @@ public class CalenderView extends Fragment implements ScrollViewListener {
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
         popupWindow.showAtLocation(getView(), Gravity.CENTER, 0, 0);
 
-        final String[] selected_day  = new String[1];
+        final String[] selected_day = new String[1];
         final String[] selected_month = new String[1];
         final String[] selected_year = new String[1];
 
 
-        NumberPicker year =  popupView.findViewById(R.id.year);
-        NumberPicker month =  popupView.findViewById(R.id.month);
+        NumberPicker year = popupView.findViewById(R.id.year);
+        NumberPicker month = popupView.findViewById(R.id.month);
         final NumberPicker day = popupView.findViewById(R.id.day);
         Button set = popupView.findViewById(R.id.date_set_button);
 
@@ -280,35 +311,35 @@ public class CalenderView extends Fragment implements ScrollViewListener {
 
         year.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal){
-               selected_year[0] = Integer.toString(newVal);
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                selected_year[0] = Integer.toString(newVal);
             }
         });
 
 
         month.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal){
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 selected_month[0] = Integer.toString(newVal);
-                if(selected_month[0].length()==1){
-                    selected_month[0] = "0"+selected_month[0];
+                if (selected_month[0].length() == 1) {
+                    selected_month[0] = "0" + selected_month[0];
                 }
-                int[] long_months =  {1,3,5,7,8,10,12};
+                int[] long_months = {1, 3, 5, 7, 8, 10, 12};
                 boolean day_fixed = false;
-                for(int I=0; I<long_months.length;I++){
-                    if(newVal==long_months[I]){
+                for (int I = 0; I < long_months.length; I++) {
+                    if (newVal == long_months[I]) {
                         day.setMaxValue(31);
                         day_fixed = true;
                     }
                 }
-                if(!day_fixed){
-                    if(newVal == 2){
-                        if(check_leap(Integer.parseInt(selected_year[0]))){
+                if (!day_fixed) {
+                    if (newVal == 2) {
+                        if (check_leap(Integer.parseInt(selected_year[0]))) {
                             day.setMaxValue(29);
-                        }else{
+                        } else {
                             day.setMaxValue(28);
                         }
-                    }else{
+                    } else {
                         day.setMaxValue(30);
                     }
                 }
@@ -317,11 +348,11 @@ public class CalenderView extends Fragment implements ScrollViewListener {
 
         day.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal){
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 selected_day[0] = Integer.toString(newVal);
 
-                if(selected_day[0].length()==1){
-                    selected_day[0] = "0"+selected_day[0];
+                if (selected_day[0].length() == 1) {
+                    selected_day[0] = "0" + selected_day[0];
                 }
             }
         });
@@ -330,7 +361,7 @@ public class CalenderView extends Fragment implements ScrollViewListener {
 
             @RequiresApi(api = Build.VERSION_CODES.O)
             public void onClick(View view) {
-                date = selected_year[0]+"-"+selected_month[0]+"-"+selected_day[0];
+                date = selected_year[0] + "-" + selected_month[0] + "-" + selected_day[0];
                 refresh_frag();
                 popupWindow.dismiss();
             }
@@ -339,14 +370,14 @@ public class CalenderView extends Fragment implements ScrollViewListener {
 
 
     public void onScrollChanged(ObservableScrollView scrollView, int x, int y, int oldx, int oldy) {
-        if(interceptScroll){
-            interceptScroll=false;
-            if(scrollView == scrollView1) {
-                scrollView2.onOverScrolled(x,y,true,true);
-            } else if(scrollView == scrollView2) {
-                scrollView1.onOverScrolled(x,y,true,true);
+        if (interceptScroll) {
+            interceptScroll = false;
+            if (scrollView == scrollView1) {
+                scrollView2.onOverScrolled(x, y, true, true);
+            } else if (scrollView == scrollView2) {
+                scrollView1.onOverScrolled(x, y, true, true);
             }
-            interceptScroll=true;
+            interceptScroll = true;
         }
     }
 

@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <item
-            android:id="@+id/add"
-            android:icon="@android:drawable/ic_input_add"
-            android:orderInCategory="1"
-            android:title="Add"
-            app:showAsAction="always" />
+    <item
+        android:id="@+id/hide"
+        android:checkable="true"
+        android:checked="true"
+        android:orderInCategory="1"
+        android:title="Hide"
+        android:visible="true"
+        app:showAsAction="always"
+        tools:icon="@android:drawable/btn_minus" />
+
+    <item
+        android:id="@+id/add"
+        android:icon="@android:drawable/ic_input_add"
+        android:orderInCategory="1"
+        android:title="Add"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/clear"
+        android:icon="@android:drawable/editbox_background_normal"
+        android:orderInCategory="1"
+        android:title="Add"
+        app:showAsAction="always" />
 
 
 </menu>
