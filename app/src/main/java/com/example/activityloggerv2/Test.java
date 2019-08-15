@@ -1,6 +1,5 @@
 package com.example.activityloggerv2;
 
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-
+import com.example.activityloggerv2.charts.QuadrantChart;
 import com.example.activityloggerv2.model.DataProcessing;
-import com.example.activityloggerv2.model.charts.QuadrantChart;
-
 
 import androidx.annotation.RequiresApi;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 
 public class Test extends Fragment {
@@ -27,6 +26,7 @@ public class Test extends Fragment {
     DataProcessing data;
     int CHART_ID = 3;
     LinearLayout graph_layout;
+    QuadrantChart q_chart;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
@@ -37,7 +37,8 @@ public class Test extends Fragment {
         data = new DataProcessing();
         graph_layout = v.findViewById(R.id.graph_layout);
         clear_chart();
-        QuadrantChart a  = new QuadrantChart(data,graph_layout);
+        LayoutInflater inflator = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+        q_chart = new QuadrantChart(data, graph_layout, inflator);
         return v;
     }
 
@@ -66,7 +67,7 @@ public class Test extends Fragment {
                 switch (select) {
                     case "Quadrant":
                         clear_chart();
-                        QuadrantChart a = new QuadrantChart(data,graph_layout);
+                        q_chart.quadrantChart();
                         break;
                     case "Goals":
                         clear_chart();

@@ -98,7 +98,6 @@ public class UserActivities extends ViewModel {
                 else{
                     currentType = activity_types.get(current);
                 }
-
             }
             br.close();
         } catch (IOException e) {

@@ -10,6 +10,6 @@ A personal app to track your day to day activitites, helps you to visualize, tra
 - [x] Schedule a day
 - [x] Graph for Different activites
 - [x] Toggle visibility of rows in calender
-- [ ] Task Graph for specific activity
+- [x] Task Graph for specific activity
 - [ ] Graph for goals
 - [ ] Improve UI

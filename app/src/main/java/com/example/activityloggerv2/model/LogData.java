@@ -2,13 +2,14 @@ package com.example.activityloggerv2.model;
 
 import android.os.Build;
 
-import java.time.Duration;
 import java.time.Instant;
 
 import androidx.annotation.RequiresApi;
 
 public class LogData {
     private String current, type;
+    private Instant start, end;
+    private int spent;
 
     public String getCurrent() {
         return current;
@@ -44,7 +45,6 @@ public class LogData {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public int getSpent() {
-        spent = (int) Duration.between(end, start).toMinutes();;
         return spent;
     }
 
@@ -52,8 +52,6 @@ public class LogData {
         this.spent = spent;
     }
 
-    private Instant start, end;
-    private int spent;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void populate(String[] val) {
